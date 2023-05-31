@@ -1,0 +1,153 @@
+---
+title: "Calidad de café en el mundo, según variedad, altitud, color, etc"
+format: html
+author: Oscar Mora 
+---
+
+# carga de bibliotecas 
+```{r}
+#| label: carga de librerias 
+#| code-fold: true
+#| message: false
+
+library(DT)
+library(plotly)
+library(tidyverse)
+library(ggplot2)
+
+```
+
+## carga de datos 
+```{r}
+#| label: carga-datos
+#| code-fold: true
+#| message: false
+#| warning: false
+
+# Carga del archivo CSV de entrada en un dataframe
+# con la función read_delim() de readr
+calidad.café <-
+  read_delim(
+    file = "coffee-quality.csv",
+    col_select = c(
+      "Country_of_Origin",
+      "Variety",
+      "Color",
+      "Altitude",
+      "Total_Cup_Points"
+  ))
+
+
+# Cambio de nombre de columnas
+calidad_café <-   
+calidad.café |>
+  rename(
+    País_de_origen = Country_of_Origin,
+    Variedad = Variety,
+    Altitud = Altitude,
+    Total_puntos_por_copa = Total_Cup_Points)
+```
+## tabla de datos 
+
+```{r}
+#| label: tabla-datos-calidad-café
+#| message: false
+#| code-fold: true
+
+#carga de datos de
+calidad_café |>
+  datatable(
+    options = list(
+      pageLength = 5,
+      language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json')
+    )
+  )
+```
+
+
+# gráficos estadísticos
+
+## Histograma que muestre la distribución de la variable "Puntos totales por tasa"
+```{r}
+#| label: histograma_de_puntaje_total_por_tasa
+#| message: false
+#| code-fold: true
+#| warning: false
+
+# Histograma ggplot2 de puntaje total por tasa
+histograma_ppt<-
+  calidad_café |>
+  ggplot(aes(x = Total_puntos_por_copa)) +
+  geom_histogram( 
+    aes(  text = paste0(
+        "total puntos por tasa (frecuebncia del rango): ", round(after_stat(x), 2), "\n",
+        "Frecuencia: ", after_stat(count)
+      )),
+    bins = 15
+  ) + 
+  geom_density() + 
+  ggtitle("Distribución de frecuencias de puntos totales por tasa de café") +
+  xlab("Puntos totales por tasa") +
+  ylab("Frecuencia") +
+  labs(caption = "Coffee Quality Institute (CQI)")
+    
+
+ggplotly(histograma_ppt, tooltip = "text") |>
+  config(locale = 'es')
+```
+
+## gráfico de dispersión 
+
+```{r}
+#| label: gráfico-dispersión
+#| message: false
+#| code-fold: true
+#| warning: false
+
+
+
+
+# Gráfico de dispersión de altitud con relación a el puntaje total por tasa
+grafico_dispersión_calidadcafé <-
+  calidad.café |>
+  ggplot(aes(x = Altitude, y = Total_Cup_Points)) +
+  geom_point(aes(
+    text = paste0(
+      "País de origen: ", Country_of_Origin, "\n",
+      "Altitud (msnm): " , Altitude, "\n",
+      "puntos total por tasa: ", Total_Cup_Points
+    )
+  )) +
+   geom_smooth(method = "lm") +
+  ggtitle("Relación del puntaje total por tasa y la altitud") +
+  xlab("Altitud (msnm)") +
+  ylab("Puntos totales por tasa") +
+  labs(caption = "Coffee Quality Institute (CQI)")
+
+# Gráfico de dispersión plotly
+ggplotly(grafico_dispersión_calidadcafé, tooltip = "text") |>
+  config(locale = 'es')
+```
+
+## gráfico de caja 
+```{r}
+#| label: gráfico-caja-puntos-totales-por-copa-y-color
+#| code-fold: true
+
+# Gráfico de caja ggplot2 de distribución 
+grafico_caja_pptyc <-
+calidad.café |>
+  ggplot(aes(x = Color, y = Total_Cup_Points)) +
+  geom_boxplot() +
+  ggtitle("Realación de color con el puntaje total por tasa") +
+  ylab("Puntaje total por tasa") +
+  xlab("Color") +
+  labs(caption = "Coffee Quality Institute (CQI)")
+
+# Gráfico de caja plotly
+ggplotly(grafico_caja_pptyc) |> 
+  config(locale = 'es')
+
+
+```
+
