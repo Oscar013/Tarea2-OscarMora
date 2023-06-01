@@ -4,7 +4,23 @@ format: html
 author: Oscar Mora 
 ---
 
-# carga de bibliotecas 
+# Introducción 
+
+EL café una de las bebidas más consumida en en mundo lo cual hace que 
+tenga una gran variedad de tipos de café los cuales tienen su respectivo 
+sabor y distinción dependiendo de diversas variables las cuales se van 
+a analizar en este documento. el país del que proviene, la altitud, la 
+variedad y el color son algunos de los parametros que se utilizan para 
+categoriar la calidad del café. 
+
+Los datos aquí analizados son tomados de la fuente *Fatih Boyar* del 
+[Coffee Quality Institute   CQI](https://github.com/fatih-boyar/coffee-quality-data-CQI.) en el cual se registraron diversas
+muestras de café de distintos paises del mundo con el proposito 
+de categorizar con respecto a variables especificas y obtener una 
+calificación total por tasa de café. 
+
+
+## carga de bibliotecas 
 ```{r}
 #| label: carga de librerias 
 #| code-fold: true
@@ -16,6 +32,7 @@ library(tidyverse)
 library(ggplot2)
 
 ```
+
 
 ## carga de datos 
 ```{r}
@@ -83,13 +100,14 @@ histograma_ppt<-
         "total puntos por tasa (frecuebncia del rango): ", round(after_stat(x), 2), "\n",
         "Frecuencia: ", after_stat(count)
       )),
-    bins = 15
+    bins = 12
   ) + 
   geom_density() + 
   ggtitle("Distribución de frecuencias de puntos totales por tasa de café") +
   xlab("Puntos totales por tasa") +
   ylab("Frecuencia") +
-  labs(caption = "Coffee Quality Institute (CQI)")
+  labs(caption = "Coffee Quality Institute (CQI)") +
+  theme_linedraw()
     
 
 ggplotly(histograma_ppt, tooltip = "text") |>
@@ -122,7 +140,8 @@ grafico_dispersión_calidadcafé <-
   ggtitle("Relación del puntaje total por tasa y la altitud") +
   xlab("Altitud (msnm)") +
   ylab("Puntos totales por tasa") +
-  labs(caption = "Coffee Quality Institute (CQI)")
+  labs(caption = "Coffee Quality Institute (CQI)") +
+  theme_dark()
 
 # Gráfico de dispersión plotly
 ggplotly(grafico_dispersión_calidadcafé, tooltip = "text") |>
@@ -133,6 +152,8 @@ ggplotly(grafico_dispersión_calidadcafé, tooltip = "text") |>
 ```{r}
 #| label: gráfico-caja-puntos-totales-por-copa-y-color
 #| code-fold: true
+#| message: false
+#| warning: false
 
 # Gráfico de caja ggplot2 de distribución 
 grafico_caja_pptyc <-
@@ -142,11 +163,13 @@ calidad.café |>
   ggtitle("Realación de color con el puntaje total por tasa") +
   ylab("Puntaje total por tasa") +
   xlab("Color") +
-  labs(caption = "Coffee Quality Institute (CQI)")
+  labs(caption = "Coffee Quality Institute (CQI)") +
+  theme_dark()
+  
 
 # Gráfico de caja plotly
 ggplotly(grafico_caja_pptyc) |> 
-  config(locale = 'es')
+  config(locale = 'es') 
 
 
 ```
